@@ -1,8 +1,12 @@
 "use client"
 
 import { useState } from "react"
+import { PlusCircle } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 
 const initialForm = {
   ownerName: "",
@@ -31,76 +35,76 @@ export function RequestForm() {
   }
 
   return (
-    <form className="space-y-4 py-6" onSubmit={handleSubmit}>
-      <div className="space-y-2">
-        <label className="text-sm font-medium" htmlFor="ownerName">
-          Nome do Proprietário
-        </label>
-        <input
-          id="ownerName"
-          name="ownerName"
-          value={formData.ownerName}
-          onChange={handleChange}
-          className="flex h-10 w-full rounded-lg border bg-background px-3 text-sm outline-none transition focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-        />
+    <form className="space-y-5 py-6" onSubmit={handleSubmit}>
+      <div className="grid gap-5 md:grid-cols-2">
+        <div className="space-y-2">
+          <Label htmlFor="ownerName">Nome do Proprietário</Label>
+          <Input
+            id="ownerName"
+            name="ownerName"
+            value={formData.ownerName}
+            onChange={handleChange}
+            placeholder="Digite o nome completo"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="cpf">CPF do Responsável</Label>
+          <Input
+            id="cpf"
+            name="cpf"
+            value={formData.cpf}
+            onChange={handleChange}
+            placeholder="000.000.000-00"
+          />
+        </div>
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium" htmlFor="cpf">
-          CPF do Responsável
-        </label>
-        <input
-          id="cpf"
-          name="cpf"
-          value={formData.cpf}
-          onChange={handleChange}
-          className="flex h-10 w-full rounded-lg border bg-background px-3 text-sm outline-none transition focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-        />
-      </div>
-
-      <div className="space-y-2">
-        <label className="text-sm font-medium" htmlFor="address">
-          Endereço do Imóvel
-        </label>
-        <textarea
+        <Label htmlFor="address">Endereço do Imóvel</Label>
+        <Textarea
           id="address"
           name="address"
           value={formData.address}
           onChange={handleChange}
-          rows={3}
-          className="flex w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none transition focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+          placeholder="Rua, número, bairro e complemento"
+          rows={4}
         />
       </div>
 
-      <div className="space-y-2">
-        <label className="text-sm font-medium" htmlFor="sql">
-          SQL
-        </label>
-        <input
-          id="sql"
-          name="sql"
-          value={formData.sql}
-          onChange={handleChange}
-          className="flex h-10 w-full rounded-lg border bg-background px-3 text-sm outline-none transition focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-        />
+      <div className="grid gap-5 md:grid-cols-2">
+        <div className="space-y-2">
+          <Label htmlFor="sql">SQL</Label>
+          <Input
+            id="sql"
+            name="sql"
+            value={formData.sql}
+            onChange={handleChange}
+            placeholder="000.000.0000-0"
+          />
+          <p className="text-xs text-muted-foreground">
+            Código do imóvel conforme cadastro municipal.
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="type">Tipo de Obra</Label>
+          <Input
+            id="type"
+            name="type"
+            value={formData.type}
+            onChange={handleChange}
+            placeholder="Ex: reforma simples"
+          />
+        </div>
       </div>
 
-      <div className="space-y-2">
-        <label className="text-sm font-medium" htmlFor="type">
-          Tipo de Obra
-        </label>
-        <input
-          id="type"
-          name="type"
-          value={formData.type}
-          onChange={handleChange}
-          className="flex h-10 w-full rounded-lg border bg-background px-3 text-sm outline-none transition focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-        />
+      <div className="flex border-t border-border pt-4">
+        <Button className="w-full sm:w-auto" size="lg" type="submit">
+          <PlusCircle className="size-4" />
+          Cadastrar pedido
+        </Button>
       </div>
-
-      <Button className="w-full" size="lg" type="submit">
-        Cadastrar pedido
-      </Button>
     </form>
   )
 }
