@@ -1,3 +1,5 @@
+import { RequestForm } from "@/components/request-form"
+
 export default function Page() {
   return (
     <main className="min-h-screen bg-muted/30">
@@ -20,24 +22,11 @@ export default function Page() {
             <div className="border-b pb-4">
               <h2 className="text-lg font-semibold">Novo pedido</h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                Espaço reservado para o formulário de cadastro.
+                Preencha os dados para registrar um novo pedido.
               </p>
             </div>
 
-            <div className="space-y-4 py-6">
-              <div className="h-10 rounded-lg border bg-muted/40" />
-              <div className="h-10 rounded-lg border bg-muted/40" />
-              <div className="h-10 rounded-lg border bg-muted/40" />
-              <div className="h-10 rounded-lg border bg-muted/40" />
-              <div className="h-10 rounded-lg border bg-muted/40" />
-              <div className="h-10 rounded-lg border bg-muted/40" />
-            </div>
-
-            <div className="rounded-lg border border-dashed bg-muted/30 px-4 py-3">
-              <p className="text-sm text-muted-foreground">
-                O formulário será montado na próxima etapa.
-              </p>
-            </div>
+            <RequestForm />
           </div>
 
           <div className="rounded-2xl border bg-background p-6 shadow-sm">
