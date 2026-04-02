@@ -27,6 +27,7 @@ const workTypes = [
 
 export function RequestForm() {
   const [formData, setFormData] = useState(initialForm)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   function handleChange(
     event: React.ChangeEvent<
@@ -41,8 +42,36 @@ export function RequestForm() {
     }))
   }
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
+
+    try {
+      setIsSubmitting(true)
+
+      const response = await fetch("/api/requests", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ownerName: formData.ownerName,
+          cpf: formData.cpf,
+          address: formData.address,
+          sql: formData.sql,
+          type: formData.type,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Erro ao cadastrar pedido.")
+      }
+
+      setFormData(initialForm)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   function handleClear() {
@@ -135,9 +164,14 @@ export function RequestForm() {
       </div>
 
       <div className="flex flex-col gap-3 border-t border-border pt-4 sm:flex-row">
-        <Button className="w-full sm:w-auto" size="lg" type="submit">
+        <Button
+          className="w-full sm:w-auto"
+          size="lg"
+          type="submit"
+          disabled={isSubmitting}
+        >
           <PlusCircle className="size-4" />
-          Cadastrar pedido
+          {isSubmitting ? "Cadastrando..." : "Cadastrar pedido"}
         </Button>
         <Button
           className="w-full sm:w-auto"
@@ -145,6 +179,7 @@ export function RequestForm() {
           type="button"
           variant="outline"
           onClick={handleClear}
+          disabled={isSubmitting}
         >
           <RotateCcw className="size-4" />
           Limpar formulário
