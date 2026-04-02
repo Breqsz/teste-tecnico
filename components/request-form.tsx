@@ -32,13 +32,129 @@ export function RequestForm() {
   const [formData, setFormData] = useState(initialForm)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [touched, setTouched] = useState<Record<string, boolean>>({})
+
+  function validateCpf(value: string) {
+    const numbers = value.replace(/\D/g, "")
+
+    if (numbers.length !== 11 || /^(\d)\1{10}$/.test(numbers)) {
+      return false
+    }
+
+    let sum = 0
+
+    for (let index = 0; index < 9; index += 1) {
+      sum += Number(numbers[index]) * (10 - index)
+    }
+
+    let digit = 11 - (sum % 11)
+    const firstDigit = digit >= 10 ? 0 : digit
+
+    if (firstDigit !== Number(numbers[9])) {
+      return false
+    }
+
+    sum = 0
+
+    for (let index = 0; index < 10; index += 1) {
+      sum += Number(numbers[index]) * (11 - index)
+    }
+
+    digit = 11 - (sum % 11)
+    const secondDigit = digit >= 10 ? 0 : digit
+
+    return secondDigit === Number(numbers[10])
+  }
+
+  function validateField(name: string, value: string) {
+    if (name === "ownerName") {
+      if (!value.trim()) {
+        return "Informe o nome do proprietário."
+      }
+
+      return ""
+    }
+
+    if (name === "cpf") {
+      if (!value.trim()) {
+        return "Informe o CPF."
+      }
+
+      if (!cpfPattern.test(value.trim()) || !validateCpf(value.trim())) {
+        return "CPF inválido"
+      }
+
+      return ""
+    }
+
+    if (name === "address") {
+      if (!value.trim()) {
+        return "Informe o endereço do imóvel."
+      }
+
+      if (value.trim().length < 10) {
+        return "Endereço deve ser mais completo"
+      }
+
+      return ""
+    }
+
+    if (name === "sql") {
+      if (!value.trim()) {
+        return "Informe o SQL do imóvel."
+      }
+
+      if (!sqlPattern.test(value.trim())) {
+        return "SQL deve estar no formato 000.000.0000-0"
+      }
+
+      return ""
+    }
+
+    if (name === "type") {
+      if (!value.trim()) {
+        return "Selecione o tipo de obra."
+      }
+
+      return ""
+    }
+
+    return ""
+  }
+
+  function formatCpf(value: string) {
+    const numbers = value.replace(/\D/g, "").slice(0, 11)
+
+    return numbers
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d{1,2})$/, "$1-$2")
+  }
+
+  function formatSql(value: string) {
+    const numbers = value.replace(/\D/g, "").slice(0, 11)
+
+    return numbers
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{4})(\d)$/, "$1-$2")
+  }
 
   function handleChange(
     event: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) {
-    const { name, value } = event.target
+    const { name } = event.target
+    let { value } = event.target
+
+    if (name === "cpf") {
+      value = formatCpf(value)
+    }
+
+    if (name === "sql") {
+      value = formatSql(value)
+    }
 
     setFormData((current) => ({
       ...current,
@@ -46,46 +162,67 @@ export function RequestForm() {
     }))
 
     setErrors((current) => {
-      if (!current[name]) {
+      if (!touched[name]) {
         return current
       }
 
       const nextErrors = { ...current }
-      delete nextErrors[name]
+
+      const error = validateField(name, value)
+
+      if (error) {
+        nextErrors[name] = error
+      } else {
+        delete nextErrors[name]
+      }
+
       return nextErrors
     })
   }
 
   function validateForm() {
     const nextErrors: Record<string, string> = {}
+    const fields = Object.keys(formData) as Array<keyof typeof formData>
 
-    if (!formData.ownerName.trim()) {
-      nextErrors.ownerName = "Informe o nome do proprietário."
-    }
+    fields.forEach((field) => {
+      const error = validateField(field, formData[field])
 
-    if (!formData.cpf.trim()) {
-      nextErrors.cpf = "Informe o CPF."
-    } else if (!cpfPattern.test(formData.cpf.trim())) {
-      nextErrors.cpf = "Use o formato 000.000.000-00."
-    }
-
-    if (!formData.address.trim()) {
-      nextErrors.address = "Informe o endereço do imóvel."
-    }
-
-    if (!formData.sql.trim()) {
-      nextErrors.sql = "Informe o SQL do imóvel."
-    } else if (!sqlPattern.test(formData.sql.trim())) {
-      nextErrors.sql = "Use o formato 000.000.0000-0."
-    }
-
-    if (!formData.type.trim()) {
-      nextErrors.type = "Selecione o tipo de obra."
-    }
+      if (error) {
+        nextErrors[field] = error
+      }
+    })
 
     setErrors(nextErrors)
+    setTouched({
+      ownerName: true,
+      cpf: true,
+      address: true,
+      sql: true,
+      type: true,
+    })
 
     return Object.keys(nextErrors).length === 0
+  }
+
+  function handleBlur(name: string) {
+    setTouched((current) => ({
+      ...current,
+      [name]: true,
+    }))
+
+    const error = validateField(name, formData[name as keyof typeof formData])
+
+    setErrors((current) => {
+      const nextErrors = { ...current }
+
+      if (error) {
+        nextErrors[name] = error
+      } else {
+        delete nextErrors[name]
+      }
+
+      return nextErrors
+    })
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -127,6 +264,7 @@ export function RequestForm() {
   function handleClear() {
     setFormData(initialForm)
     setErrors({})
+    setTouched({})
   }
 
   return (
@@ -141,6 +279,7 @@ export function RequestForm() {
             name="ownerName"
             value={formData.ownerName}
             onChange={handleChange}
+            onBlur={() => handleBlur("ownerName")}
             placeholder="Digite o nome completo"
             aria-invalid={Boolean(errors.ownerName)}
           />
@@ -158,6 +297,7 @@ export function RequestForm() {
             name="cpf"
             value={formData.cpf}
             onChange={handleChange}
+            onBlur={() => handleBlur("cpf")}
             placeholder="000.000.000-00"
             aria-invalid={Boolean(errors.cpf)}
           />
@@ -176,6 +316,7 @@ export function RequestForm() {
           name="address"
           value={formData.address}
           onChange={handleChange}
+          onBlur={() => handleBlur("address")}
           placeholder="Rua, número, bairro - CEP"
           rows={3}
           aria-invalid={Boolean(errors.address)}
@@ -195,15 +336,16 @@ export function RequestForm() {
             name="sql"
             value={formData.sql}
             onChange={handleChange}
+            onBlur={() => handleBlur("sql")}
             placeholder="000.000.0000-0"
             aria-invalid={Boolean(errors.sql)}
           />
-          <p className="text-xs text-muted-foreground">
-            Código do imóvel conforme cadastro municipal.
-          </p>
           {errors.sql ? (
             <p className="text-sm text-destructive">{errors.sql}</p>
           ) : null}
+          <p className="text-xs text-muted-foreground">
+            Setor-Quadra-Lote (SQL) conforme cadastro municipal
+          </p>
         </div>
 
         <div className="space-y-2">
@@ -216,8 +358,11 @@ export function RequestForm() {
               name="type"
               value={formData.type}
               onChange={handleChange}
+              onBlur={() => handleBlur("type")}
               aria-invalid={Boolean(errors.type)}
-              className="flex h-10 w-full appearance-none rounded-lg border border-input bg-background px-3 py-2 pr-10 text-sm text-foreground transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/20"
+              className={`flex h-10 w-full appearance-none rounded-lg border bg-background px-3 py-2 pr-10 text-sm text-foreground transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/20 ${
+                errors.type ? "border-destructive" : "border-input"
+              }`}
             >
               <option value="">Selecione o tipo de obra</option>
               {workTypes.map((workType) => (
