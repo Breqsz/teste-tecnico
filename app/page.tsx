@@ -1,5 +1,40 @@
+import { Input } from "@/components/ui/input"
 import { RequestForm } from "@/components/request-form"
-import { Building2, Info } from "lucide-react"
+import {
+  Building2,
+  FileCheck,
+  FileClock,
+  FileX,
+  FolderOpen,
+  Search,
+} from "lucide-react"
+
+const stats = [
+  {
+    title: "Total de Pedidos",
+    value: 0,
+    icon: FolderOpen,
+    className: "border-[#dbe6f3]",
+  },
+  {
+    title: "Em Análise",
+    value: 0,
+    icon: FileClock,
+    className: "border-[#f3e6bf] bg-[#fffaf0]",
+  },
+  {
+    title: "Aprovados",
+    value: 0,
+    icon: FileCheck,
+    className: "border-[#c8f0db] bg-[#f5fdf8]",
+  },
+  {
+    title: "Negados",
+    value: 0,
+    icon: FileX,
+    className: "border-[#f7d4d4] bg-[#fff8f8]",
+  },
+]
 
 export default function Page() {
   return (
@@ -21,83 +56,102 @@ export default function Page() {
       </header>
 
       <main className="mx-auto max-w-7xl px-6 py-8">
-        <div className="mb-6 rounded-xl border border-[#bfdbfe] bg-[#eff6ff] p-4">
-          <div className="flex gap-3">
-            <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/10">
-              <Info className="size-4 text-primary" />
-            </div>
-            <div>
-              <h2 className="text-sm font-semibold text-[#1e3a8a]">
-                Cadastro de pedidos
-              </h2>
-              <p className="mt-1 text-sm text-[#1d4ed8]">
-                Use o formulário ao lado para registrar novos pedidos de alvará
-                de reforma.
-              </p>
-            </div>
+        <section className="mb-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {stats.map((stat) => {
+            const Icon = stat.icon
+
+            return (
+              <div
+                key={stat.title}
+                className={`rounded-xl border bg-background p-5 shadow-sm ${stat.className}`}
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      {stat.title}
+                    </p>
+                    <p className="mt-3 text-4xl font-semibold tracking-tight">
+                      {stat.value}
+                    </p>
+                  </div>
+                  <div className="flex size-11 items-center justify-center rounded-xl bg-muted/60 text-primary">
+                    <Icon className="size-5" />
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </section>
+
+        <section className="rounded-xl border bg-background p-6 shadow-sm">
+          <div className="mb-6 border-b pb-4">
+            <h2>Novo Pedido de Alvará</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Preencha os dados do pedido de alvará de reforma
+            </p>
           </div>
-        </div>
 
-        <section className="grid gap-6 lg:grid-cols-[420px_minmax(0,1fr)]">
-          <div className="rounded-xl border bg-background p-6 shadow-sm">
-            <div className="mb-6 border-b pb-4">
-              <h2 className="text-xl font-semibold">Novo pedido</h2>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Preencha os dados para registrar um novo pedido no sistema.
-              </p>
-            </div>
+          <RequestForm />
+        </section>
 
-            <RequestForm />
+        <section className="mt-8">
+          <div className="mb-4">
+            <h2>Pedidos Cadastrados</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Visualize, gerencie e acompanhe todos os pedidos de alvará de
+              reforma cadastrados no sistema
+            </p>
           </div>
 
-          <div className="rounded-xl border bg-background p-6 shadow-sm">
-            <div className="flex items-start justify-between gap-4 border-b pb-4">
-              <div>
-                <h2 className="text-xl font-semibold">Pedidos cadastrados</h2>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Área preparada para exibir e gerenciar os pedidos registrados.
-                </p>
-              </div>
-
-              <div className="rounded-full border bg-muted px-3 py-1 text-xs text-muted-foreground">
-                Sem dados por enquanto
+          <div className="overflow-hidden rounded-xl border bg-background shadow-sm">
+            <div className="border-b p-4">
+              <div className="relative">
+                <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  readOnly
+                  className="pl-9"
+                  placeholder="Buscar por nome, CPF, endereço, SQL ou tipo de obra..."
+                />
               </div>
             </div>
 
-            <div className="space-y-3 py-6">
-              <div className="grid grid-cols-[1.4fr_1fr_1fr] gap-3 rounded-lg border bg-muted/40 px-4 py-3 text-sm font-medium">
-                <span>Proprietário</span>
-                <span>Tipo de obra</span>
-                <span>Status</span>
-              </div>
-
-              <div className="grid grid-cols-[1.4fr_1fr_1fr] gap-3 rounded-lg border px-4 py-4 text-sm text-muted-foreground">
-                <span>Lista será exibida aqui</span>
-                <span>-</span>
-                <span>-</span>
-              </div>
-
-              <div className="grid grid-cols-[1.4fr_1fr_1fr] gap-3 rounded-lg border px-4 py-4 text-sm text-muted-foreground">
-                <span>Registros futuros</span>
-                <span>-</span>
-                <span>-</span>
-              </div>
-
-              <div className="grid grid-cols-[1.4fr_1fr_1fr] gap-3 rounded-lg border px-4 py-4 text-sm text-muted-foreground">
-                <span>Conteúdo do CRUD</span>
-                <span>-</span>
-                <span>-</span>
-              </div>
-            </div>
-
-            <div className="rounded-lg border border-dashed bg-muted/30 px-4 py-3">
-              <p className="text-sm text-muted-foreground">
-                A listagem será conectada aos dados em uma etapa futura.
-              </p>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[920px] border-collapse text-sm">
+                <thead>
+                  <tr className="border-b bg-muted/20 text-left">
+                    <th className="px-4 py-3 font-semibold">Proprietário</th>
+                    <th className="px-4 py-3 font-semibold">CPF</th>
+                    <th className="px-4 py-3 font-semibold">Endereço</th>
+                    <th className="px-4 py-3 font-semibold">SQL</th>
+                    <th className="px-4 py-3 font-semibold">Tipo de Obra</th>
+                    <th className="px-4 py-3 font-semibold">Status</th>
+                    <th className="px-4 py-3 text-right font-semibold">
+                      Ações
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td
+                      colSpan={7}
+                      className="px-4 py-8 text-center text-sm text-muted-foreground"
+                    >
+                      Os pedidos cadastrados aparecerão aqui na próxima etapa.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </section>
       </main>
+
+      <footer className="mt-12 border-t bg-background">
+        <div className="mx-auto flex max-w-7xl flex-col gap-2 px-6 py-6 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+          <p>© 2026 Prefeitura Municipal de São Paulo - SMUL</p>
+          <p>Sistema de Gestão de Alvarás v1.0.0</p>
+        </div>
+      </footer>
     </div>
   )
 }
