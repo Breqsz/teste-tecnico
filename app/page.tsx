@@ -1,40 +1,61 @@
 import { RequestForm } from "@/components/request-form"
+import { Building2, Info } from "lucide-react"
 
 export default function Page() {
   return (
-    <main className="min-h-screen bg-muted/30">
-      <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-6 py-10">
-        <header className="rounded-2xl border bg-background px-8 py-7 shadow-sm">
-          <p className="text-sm font-medium text-muted-foreground">
-            Secretaria Municipal de Urbanismo e Licenciamento
-          </p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight">
-            Gestão de pedidos de alvará
-          </h1>
-          <p className="mt-3 max-w-3xl text-sm leading-6 text-muted-foreground">
-            Painel interno para registro e acompanhamento de pequenos pedidos de
-            reforma.
-          </p>
-        </header>
+    <div className="min-h-screen bg-gradient-to-b from-background to-[#eef3f8]">
+      <header className="border-b bg-background shadow-sm">
+        <div className="mx-auto flex max-w-7xl items-center gap-3 px-6 py-5">
+          <div className="flex size-11 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+            <Building2 className="size-6" strokeWidth={2} />
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground">
+              Secretaria Municipal de Urbanismo e Licenciamento
+            </p>
+            <h1 className="text-2xl font-semibold tracking-tight">
+              Gestão de pequenos alvarás
+            </h1>
+          </div>
+        </div>
+      </header>
 
-        <section className="mt-6 grid gap-6 lg:grid-cols-[360px_minmax(0,1fr)]">
-          <div className="rounded-2xl border bg-background p-6 shadow-sm">
-            <div className="border-b pb-4">
-              <h2 className="text-lg font-semibold">Novo pedido</h2>
+      <main className="mx-auto max-w-7xl px-6 py-8">
+        <div className="mb-6 rounded-xl border border-[#bfdbfe] bg-[#eff6ff] p-4">
+          <div className="flex gap-3">
+            <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/10">
+              <Info className="size-4 text-primary" />
+            </div>
+            <div>
+              <h2 className="text-sm font-semibold text-[#1e3a8a]">
+                Cadastro de pedidos
+              </h2>
+              <p className="mt-1 text-sm text-[#1d4ed8]">
+                Use o formulário ao lado para registrar novos pedidos de alvará
+                de reforma.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <section className="grid gap-6 lg:grid-cols-[420px_minmax(0,1fr)]">
+          <div className="rounded-xl border bg-background p-6 shadow-sm">
+            <div className="mb-6 border-b pb-4">
+              <h2 className="text-xl font-semibold">Novo pedido</h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                Preencha os dados para registrar um novo pedido.
+                Preencha os dados para registrar um novo pedido no sistema.
               </p>
             </div>
 
             <RequestForm />
           </div>
 
-          <div className="rounded-2xl border bg-background p-6 shadow-sm">
+          <div className="rounded-xl border bg-background p-6 shadow-sm">
             <div className="flex items-start justify-between gap-4 border-b pb-4">
               <div>
-                <h2 className="text-lg font-semibold">Pedidos cadastrados</h2>
+                <h2 className="text-xl font-semibold">Pedidos cadastrados</h2>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Área preparada para exibir a lista de pedidos.
+                  Área preparada para exibir e gerenciar os pedidos registrados.
                 </p>
               </div>
 
@@ -44,7 +65,7 @@ export default function Page() {
             </div>
 
             <div className="space-y-3 py-6">
-              <div className="grid grid-cols-[1.4fr_1fr_1fr] gap-3 rounded-lg border bg-muted/20 px-4 py-3 text-sm font-medium">
+              <div className="grid grid-cols-[1.4fr_1fr_1fr] gap-3 rounded-lg border bg-muted/40 px-4 py-3 text-sm font-medium">
                 <span>Proprietário</span>
                 <span>Tipo de obra</span>
                 <span>Status</span>
@@ -76,7 +97,7 @@ export default function Page() {
             </div>
           </div>
         </section>
-      </div>
-    </main>
+      </main>
+    </div>
   )
 }
