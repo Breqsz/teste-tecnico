@@ -1,55 +1,118 @@
-# Teste Técnico - Estágio SMUL 🏛️
+# Gestão de Pequenos Alvarás
 
-## 📅 Prazo
-**Data limite:** 06/04/2026
+Aplicação web para cadastro e gerenciamento de pedidos de alvará de reforma.
 
----
+O projeto foi desenvolvido com foco em um fluxo simples de CRUD:
+- cadastrar pedidos
+- listar pedidos
+- alterar status
+- excluir pedidos
 
-## 📝 Contexto
-A Secretaria Municipal de Urbanismo e Licenciamento (SMUL) de São Paulo tem o objetivo de regular e facilitar processos complexos de regularização imobiliária e territorial. 
+## Stack
 
-Para este teste, você deverá desenvolver um **protótipo de um sistema para gestão de pequenos alvarás de reforma**. Vale ressaltar que este sistema é fictício e servirá exclusivamente para o processo seletivo.
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+- shadcn/ui
+- Prisma ORM
+- SQLite
 
-O objetivo é criar uma aplicação web que permita o gerenciamento completo (CRUD) de pedidos de alvará, focando em organização de código, lógica de manipulação de dados e integração entre front-end e back-end.
+## Pré-requisitos
 
----
+- Node.js 20 ou superior
+- npm
 
-## 🛠️ Requisitos Funcionais
+## Instalação
 
-1.  **Cadastro de Pedidos:** Um formulário para registrar novos pedidos com os seguintes campos (todos com validação):
-    * Nome do Proprietário.
-    * CPF do Responsável.
-    * Endereço do Imóvel.
-    * **SQL (Setor-Quadra-Lote):** Código do imóvel no cadastro da prefeitura (ex: 000.000.0000-0).
-    * **Tipo de Obra:** (Ex: Reforma de telhado, construção de muro, pintura externa).
-2.  **Visualização:** Uma tabela que liste todos os pedidos já cadastrados.
-3.  **Edição de Status:** Possibilidade de alterar o status de um pedido (Ex: Pendente, Aprovado ou Negado).
-4.  **Exclusão:** Possibilidade de remover um registro da lista.
+Instale as dependências:
 
----
+```bash
+npm install
+```
 
-## 💻 Requisitos Técnicos
+## Configuração do ambiente
 
-* **Linguagem/Ambiente:** Node.js
-* **Framework:** Next.js
-* **UI/Componentes:** shadcn/ui
-* **Estilização:** Tailwind CSS
-* **Banco de Dados & Persistência:** Uso de API Routes do Next.js com banco de dados **SQLite** através do **Prisma ORM**.
+Crie o arquivo `.env` com base no `.env.example`:
 
----
+```bash
+cp .env.example .env
+```
 
-## 🔍 O que vamos avaliar
+Se estiver no Windows PowerShell, pode usar:
 
-* **Organização e Boas Práticas:** Estrutura de pastas, legibilidade e componentização.
-* **Uso do Git:** Frequência de commits e clareza nas mensagens.
-* **Interface:** Fluidez e uso correto dos componentes de UI.
-* **Lógica de Programação:** Tratamento de dados e validações.
+```powershell
+Copy-Item .env.example .env
+```
 
----
+## Banco de dados
 
-## 🚀 Instruções de Entrega
+O projeto usa SQLite com Prisma.
 
-1.  Utilize o seguinte repositório como template: [teste-tecnico-2026](https://github.com/smdu-sp/teste-tecnico-2026).
-2.  Desenvolva o projeto em um **repositório privado**.
-3.  Adicione o usuário do GitHub `aalevictor` como colaborador para a avaliação.
-4.  Crie um novo arquivo .md e insira as instruções claras de como rodar o projeto localmente.
+Gerar o Prisma Client:
+
+```bash
+npx prisma generate
+```
+
+Aplicar a migration inicial:
+
+```bash
+npx prisma migrate deploy
+```
+
+Se quiser conferir o status das migrations:
+
+```bash
+npx prisma migrate status
+```
+
+## Rodando o projeto
+
+Inicie o servidor de desenvolvimento:
+
+```bash
+npm run dev
+```
+
+Depois acesse:
+
+```txt
+http://localhost:3000
+```
+
+## Scripts principais
+
+```bash
+npm run dev
+npm run build
+npm run start
+npm run typecheck
+npx prisma generate
+npx prisma migrate deploy
+npx prisma migrate status
+```
+
+## Estrutura resumida
+
+```txt
+app/
+  api/requests/         rotas do CRUD
+  page.tsx              tela principal
+
+components/
+  request-form.tsx      formulário de cadastro
+  request-list.tsx      listagem de pedidos
+  ui/                   componentes base
+
+lib/
+  prisma.ts             instância do Prisma Client
+
+prisma/
+  schema.prisma         schema do banco
+  migrations/           migration inicial
+```
+
+## Observação
+
+O banco SQLite é local e os dados ficam no arquivo `dev.db`.

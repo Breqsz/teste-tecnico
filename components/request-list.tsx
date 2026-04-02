@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Trash2 } from "lucide-react"
+import { CircleAlert, LoaderCircle, SearchX, Trash2 } from "lucide-react"
 
 type RequestItem = {
   id: number
@@ -123,24 +123,27 @@ export function RequestList() {
 
   if (isLoading) {
     return (
-      <div className="px-4 py-8 text-center text-sm text-muted-foreground">
-        Carregando pedidos...
+      <div className="flex flex-col items-center justify-center gap-3 px-4 py-10 text-center text-sm text-muted-foreground">
+        <LoaderCircle className="size-5 animate-spin" />
+        <p>Carregando pedidos...</p>
       </div>
     )
   }
 
   if (hasError) {
     return (
-      <div className="px-4 py-8 text-center text-sm text-destructive">
-        Não foi possível carregar os pedidos.
+      <div className="flex flex-col items-center justify-center gap-3 px-4 py-10 text-center text-sm text-destructive">
+        <CircleAlert className="size-5" />
+        <p>Não foi possível carregar os pedidos.</p>
       </div>
     )
   }
 
   if (requests.length === 0) {
     return (
-      <div className="px-4 py-8 text-center text-sm text-muted-foreground">
-        Nenhum pedido cadastrado até o momento.
+      <div className="flex flex-col items-center justify-center gap-3 px-4 py-10 text-center text-sm text-muted-foreground">
+        <SearchX className="size-5" />
+        <p>Nenhum pedido cadastrado até o momento.</p>
       </div>
     )
   }
@@ -150,17 +153,32 @@ export function RequestList() {
       <table className="w-full min-w-[760px] border-collapse text-sm">
         <thead>
           <tr className="border-b bg-muted/20 text-left">
-            <th className="px-4 py-3 font-semibold">Nome</th>
-            <th className="px-4 py-3 font-semibold">CPF</th>
-            <th className="px-4 py-3 font-semibold">Endereço</th>
-            <th className="px-4 py-3 font-semibold">Tipo de Obra</th>
-            <th className="px-4 py-3 font-semibold">Status</th>
-            <th className="px-4 py-3 text-right font-semibold">Ações</th>
+            <th className="px-4 py-3 text-xs font-semibold tracking-[0.08em] text-muted-foreground uppercase">
+              Nome
+            </th>
+            <th className="px-4 py-3 text-xs font-semibold tracking-[0.08em] text-muted-foreground uppercase">
+              CPF
+            </th>
+            <th className="px-4 py-3 text-xs font-semibold tracking-[0.08em] text-muted-foreground uppercase">
+              Endereço
+            </th>
+            <th className="px-4 py-3 text-xs font-semibold tracking-[0.08em] text-muted-foreground uppercase">
+              Tipo de Obra
+            </th>
+            <th className="px-4 py-3 text-xs font-semibold tracking-[0.08em] text-muted-foreground uppercase">
+              Status
+            </th>
+            <th className="px-4 py-3 text-right text-xs font-semibold tracking-[0.08em] text-muted-foreground uppercase">
+              Ações
+            </th>
           </tr>
         </thead>
         <tbody>
           {requests.map((request) => (
-            <tr key={request.id} className="border-b last:border-b-0">
+            <tr
+              key={request.id}
+              className="border-b transition-colors last:border-b-0 hover:bg-muted/10"
+            >
               <td className="px-4 py-4 font-medium">{request.ownerName}</td>
               <td className="px-4 py-4 text-muted-foreground">{request.cpf}</td>
               <td className="max-w-[320px] truncate px-4 py-4 text-muted-foreground">
@@ -172,7 +190,7 @@ export function RequestList() {
               <td className="px-4 py-4">
                 <div className="flex items-center gap-3">
                   <span
-                    className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${statusClasses[request.status]}`}
+                    className={`inline-flex min-w-[86px] justify-center rounded-full border px-2.5 py-1 text-xs font-semibold ${statusClasses[request.status]}`}
                   >
                     {statusLabels[request.status]}
                   </span>
@@ -199,7 +217,7 @@ export function RequestList() {
                   type="button"
                   onClick={() => handleDelete(request.id)}
                   disabled={deletingId === request.id}
-                  className="inline-flex h-9 items-center gap-2 rounded-lg border border-border px-3 text-sm text-muted-foreground transition hover:bg-muted disabled:opacity-60"
+                  className="inline-flex h-9 items-center gap-2 rounded-lg border border-border px-3 text-sm text-muted-foreground transition hover:bg-muted hover:text-foreground disabled:opacity-60"
                 >
                   <Trash2 className="size-4" />
                   {deletingId === request.id ? "Excluindo..." : "Excluir"}

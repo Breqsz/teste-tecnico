@@ -268,7 +268,7 @@ export function RequestForm() {
   }
 
   return (
-    <form className="space-y-5 py-6" onSubmit={handleSubmit}>
+    <form className="space-y-6 py-2" onSubmit={handleSubmit}>
       <div className="grid gap-5 md:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="ownerName">
@@ -379,7 +379,7 @@ export function RequestForm() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 border-t border-border pt-4 sm:flex-row">
+      <div className="flex flex-col gap-3 border-t border-border pt-5 sm:flex-row">
         <Button
           className="w-full sm:w-auto"
           size="lg"
