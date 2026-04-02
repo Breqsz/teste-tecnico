@@ -1,0 +1,12 @@
+-- CreateTable
+CREATE TABLE "Request" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "ownerName" TEXT NOT NULL,
+    "cpf" TEXT NOT NULL,
+    "address" TEXT NOT NULL,
+    "sql" TEXT NOT NULL,
+    "type" TEXT NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'PENDING',
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL
+);
