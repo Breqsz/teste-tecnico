@@ -1,4 +1,5 @@
 import { Input } from "@/components/ui/input"
+import { RequestList } from "@/components/request-list"
 import { RequestForm } from "@/components/request-form"
 import {
   Building2,
@@ -115,33 +116,7 @@ export default function Page() {
               </div>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[920px] border-collapse text-sm">
-                <thead>
-                  <tr className="border-b bg-muted/20 text-left">
-                    <th className="px-4 py-3 font-semibold">Proprietário</th>
-                    <th className="px-4 py-3 font-semibold">CPF</th>
-                    <th className="px-4 py-3 font-semibold">Endereço</th>
-                    <th className="px-4 py-3 font-semibold">SQL</th>
-                    <th className="px-4 py-3 font-semibold">Tipo de Obra</th>
-                    <th className="px-4 py-3 font-semibold">Status</th>
-                    <th className="px-4 py-3 text-right font-semibold">
-                      Ações
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td
-                      colSpan={7}
-                      className="px-4 py-8 text-center text-sm text-muted-foreground"
-                    >
-                      Os pedidos cadastrados aparecerão aqui na próxima etapa.
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+            <RequestList />
           </div>
         </section>
       </main>
