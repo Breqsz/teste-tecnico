@@ -27,6 +27,7 @@ export function RequestList() {
   const [requests, setRequests] = useState<RequestItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
+  const [updatingId, setUpdatingId] = useState<number | null>(null)
 
   useEffect(() => {
     async function loadRequests() {
@@ -52,6 +53,41 @@ export function RequestList() {
 
     loadRequests()
   }, [])
+
+  async function handleStatusChange(
+    requestId: number,
+    status: RequestItem["status"]
+  ) {
+    try {
+      setUpdatingId(requestId)
+
+      const response = await fetch(`/api/requests/${requestId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Erro ao atualizar status.")
+      }
+
+      const updatedRequest = await response.json()
+
+      setRequests((current) =>
+        current.map((request) =>
+          request.id === requestId
+            ? { ...request, status: updatedRequest.status }
+            : request
+        )
+      )
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setUpdatingId(null)
+    }
+  }
 
   if (isLoading) {
     return (
@@ -101,11 +137,29 @@ export function RequestList() {
                 {request.type}
               </td>
               <td className="px-4 py-4">
-                <span
-                  className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${statusClasses[request.status]}`}
-                >
-                  {statusLabels[request.status]}
-                </span>
+                <div className="flex items-center gap-3">
+                  <span
+                    className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${statusClasses[request.status]}`}
+                  >
+                    {statusLabels[request.status]}
+                  </span>
+
+                  <select
+                    value={request.status}
+                    onChange={(event) =>
+                      handleStatusChange(
+                        request.id,
+                        event.target.value as RequestItem["status"]
+                      )
+                    }
+                    disabled={updatingId === request.id}
+                    className="h-9 rounded-lg border border-input bg-background px-3 text-sm transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/20 disabled:opacity-60"
+                  >
+                    <option value="PENDING">Pendente</option>
+                    <option value="APPROVED">Aprovado</option>
+                    <option value="DENIED">Negado</option>
+                  </select>
+                </div>
               </td>
             </tr>
           ))}
