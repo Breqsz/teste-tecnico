@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { Trash2 } from "lucide-react"
 
 type RequestItem = {
   id: number
@@ -28,6 +29,7 @@ export function RequestList() {
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
   const [updatingId, setUpdatingId] = useState<number | null>(null)
+  const [deletingId, setDeletingId] = useState<number | null>(null)
 
   useEffect(() => {
     async function loadRequests() {
@@ -89,6 +91,36 @@ export function RequestList() {
     }
   }
 
+  async function handleDelete(requestId: number) {
+    const shouldDelete = window.confirm(
+      "Tem certeza que deseja excluir este pedido?"
+    )
+
+    if (!shouldDelete) {
+      return
+    }
+
+    try {
+      setDeletingId(requestId)
+
+      const response = await fetch(`/api/requests/${requestId}`, {
+        method: "DELETE",
+      })
+
+      if (!response.ok) {
+        throw new Error("Erro ao excluir pedido.")
+      }
+
+      setRequests((current) =>
+        current.filter((request) => request.id !== requestId)
+      )
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setDeletingId(null)
+    }
+  }
+
   if (isLoading) {
     return (
       <div className="px-4 py-8 text-center text-sm text-muted-foreground">
@@ -123,6 +155,7 @@ export function RequestList() {
             <th className="px-4 py-3 font-semibold">Endereço</th>
             <th className="px-4 py-3 font-semibold">Tipo de Obra</th>
             <th className="px-4 py-3 font-semibold">Status</th>
+            <th className="px-4 py-3 text-right font-semibold">Ações</th>
           </tr>
         </thead>
         <tbody>
@@ -160,6 +193,17 @@ export function RequestList() {
                     <option value="DENIED">Negado</option>
                   </select>
                 </div>
+              </td>
+              <td className="px-4 py-4 text-right">
+                <button
+                  type="button"
+                  onClick={() => handleDelete(request.id)}
+                  disabled={deletingId === request.id}
+                  className="inline-flex h-9 items-center gap-2 rounded-lg border border-border px-3 text-sm text-muted-foreground transition hover:bg-muted disabled:opacity-60"
+                >
+                  <Trash2 className="size-4" />
+                  {deletingId === request.id ? "Excluindo..." : "Excluir"}
+                </button>
               </td>
             </tr>
           ))}
