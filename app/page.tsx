@@ -13,6 +13,12 @@ import {
   Search,
 } from "lucide-react"
 
+const statusText = {
+  PENDING: "pendente",
+  APPROVED: "aprovado",
+  DENIED: "negado",
+}
+
 export default function Page() {
   const [requests, setRequests] = useState<RequestItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -85,21 +91,9 @@ export default function Page() {
     },
   ]
 
-  function getStatusLabel(status: RequestItem["status"]) {
-    if (status === "PENDING") {
-      return "pendente"
-    }
-
-    if (status === "APPROVED") {
-      return "aprovado"
-    }
-
-    return "negado"
-  }
-
   function handleCreated(request: RequestItem) {
     setRequests((current) => [request, ...current])
-    setNotice(`Alvará ${request.id} cadastrado com sucesso`)
+    setNotice(`Pedido de ${request.ownerName} cadastrado com sucesso`)
   }
 
   function handleStatusUpdated(
@@ -113,13 +107,13 @@ export default function Page() {
     )
 
     setNotice(
-      `Alterado alvará ${updatedRequest.id} de ${getStatusLabel(previousStatus)} para ${getStatusLabel(updatedRequest.status)}`
+      `Alterado alvará de ${updatedRequest.ownerName} de ${statusText[previousStatus]} para ${statusText[updatedRequest.status]}`
     )
   }
 
   function handleDeleted(request: RequestItem) {
     setRequests((current) => current.filter((item) => item.id !== request.id))
-    setNotice(`Alvará ${request.id} excluído com sucesso`)
+    setNotice(`Pedido de ${request.ownerName} excluído com sucesso`)
   }
 
   return (
