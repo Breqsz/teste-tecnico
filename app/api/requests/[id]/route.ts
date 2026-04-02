@@ -40,3 +40,33 @@ export async function PATCH(
     )
   }
 }
+
+export async function DELETE(
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+    const requestId = Number(id)
+
+    if (Number.isNaN(requestId)) {
+      return NextResponse.json({ error: "Id inválido." }, { status: 400 })
+    }
+
+    await prisma.request.delete({
+      where: {
+        id: requestId,
+      },
+    })
+
+    return NextResponse.json(
+      { message: "Pedido removido com sucesso." },
+      { status: 200 }
+    )
+  } catch {
+    return NextResponse.json(
+      { error: "Não foi possível remover o pedido." },
+      { status: 500 }
+    )
+  }
+}
