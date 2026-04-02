@@ -6,3 +6,21 @@ datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
+
+enum PermitStatus {
+  PENDING
+  APPROVED
+  DENIED
+}
+
+model Request {
+  id        Int          @id @default(autoincrement())
+  ownerName String
+  cpf       String
+  address   String
+  sql       String
+  type      String
+  status    PermitStatus @default(PENDING)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
