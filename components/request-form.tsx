@@ -25,9 +25,13 @@ const workTypes = [
   "Demolição Parcial",
 ]
 
+const cpfPattern = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/
+const sqlPattern = /^\d{3}\.\d{3}\.\d{4}-\d$/
+
 export function RequestForm() {
   const [formData, setFormData] = useState(initialForm)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [errors, setErrors] = useState<Record<string, string>>({})
 
   function handleChange(
     event: React.ChangeEvent<
@@ -40,10 +44,56 @@ export function RequestForm() {
       ...current,
       [name]: value,
     }))
+
+    setErrors((current) => {
+      if (!current[name]) {
+        return current
+      }
+
+      const nextErrors = { ...current }
+      delete nextErrors[name]
+      return nextErrors
+    })
+  }
+
+  function validateForm() {
+    const nextErrors: Record<string, string> = {}
+
+    if (!formData.ownerName.trim()) {
+      nextErrors.ownerName = "Informe o nome do proprietário."
+    }
+
+    if (!formData.cpf.trim()) {
+      nextErrors.cpf = "Informe o CPF."
+    } else if (!cpfPattern.test(formData.cpf.trim())) {
+      nextErrors.cpf = "Use o formato 000.000.000-00."
+    }
+
+    if (!formData.address.trim()) {
+      nextErrors.address = "Informe o endereço do imóvel."
+    }
+
+    if (!formData.sql.trim()) {
+      nextErrors.sql = "Informe o SQL do imóvel."
+    } else if (!sqlPattern.test(formData.sql.trim())) {
+      nextErrors.sql = "Use o formato 000.000.0000-0."
+    }
+
+    if (!formData.type.trim()) {
+      nextErrors.type = "Selecione o tipo de obra."
+    }
+
+    setErrors(nextErrors)
+
+    return Object.keys(nextErrors).length === 0
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
+
+    if (!validateForm()) {
+      return
+    }
 
     try {
       setIsSubmitting(true)
@@ -76,6 +126,7 @@ export function RequestForm() {
 
   function handleClear() {
     setFormData(initialForm)
+    setErrors({})
   }
 
   return (
@@ -91,7 +142,11 @@ export function RequestForm() {
             value={formData.ownerName}
             onChange={handleChange}
             placeholder="Digite o nome completo"
+            aria-invalid={Boolean(errors.ownerName)}
           />
+          {errors.ownerName ? (
+            <p className="text-sm text-destructive">{errors.ownerName}</p>
+          ) : null}
         </div>
 
         <div className="space-y-2">
@@ -104,7 +159,11 @@ export function RequestForm() {
             value={formData.cpf}
             onChange={handleChange}
             placeholder="000.000.000-00"
+            aria-invalid={Boolean(errors.cpf)}
           />
+          {errors.cpf ? (
+            <p className="text-sm text-destructive">{errors.cpf}</p>
+          ) : null}
         </div>
       </div>
 
@@ -119,7 +178,11 @@ export function RequestForm() {
           onChange={handleChange}
           placeholder="Rua, número, bairro - CEP"
           rows={3}
+          aria-invalid={Boolean(errors.address)}
         />
+        {errors.address ? (
+          <p className="text-sm text-destructive">{errors.address}</p>
+        ) : null}
       </div>
 
       <div className="grid gap-5 md:grid-cols-2">
@@ -133,10 +196,14 @@ export function RequestForm() {
             value={formData.sql}
             onChange={handleChange}
             placeholder="000.000.0000-0"
+            aria-invalid={Boolean(errors.sql)}
           />
           <p className="text-xs text-muted-foreground">
             Código do imóvel conforme cadastro municipal.
           </p>
+          {errors.sql ? (
+            <p className="text-sm text-destructive">{errors.sql}</p>
+          ) : null}
         </div>
 
         <div className="space-y-2">
@@ -149,6 +216,7 @@ export function RequestForm() {
               name="type"
               value={formData.type}
               onChange={handleChange}
+              aria-invalid={Boolean(errors.type)}
               className="flex h-10 w-full appearance-none rounded-lg border border-input bg-background px-3 py-2 pr-10 text-sm text-foreground transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/20"
             >
               <option value="">Selecione o tipo de obra</option>
@@ -160,6 +228,9 @@ export function RequestForm() {
             </select>
             <ChevronDown className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-muted-foreground" />
           </div>
+          {errors.type ? (
+            <p className="text-sm text-destructive">{errors.type}</p>
+          ) : null}
         </div>
       </div>
 
