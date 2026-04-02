@@ -1,16 +1,8 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { CircleAlert, LoaderCircle, SearchX, Trash2 } from "lucide-react"
-
-type RequestItem = {
-  id: number
-  ownerName: string
-  cpf: string
-  address: string
-  type: string
-  status: "PENDING" | "APPROVED" | "DENIED"
-}
+import { useState } from "react"
+import { Trash2 } from "lucide-react"
+import type { RequestItem } from "@/components/request-form"
 
 const statusLabels = {
   PENDING: "Pendente",
@@ -24,37 +16,26 @@ const statusClasses = {
   DENIED: "bg-red-100 text-red-700",
 }
 
-export function RequestList() {
-  const [requests, setRequests] = useState<RequestItem[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [hasError, setHasError] = useState(false)
+type RequestListProps = {
+  requests: RequestItem[]
+  isLoading: boolean
+  hasError: boolean
+  onStatusUpdated?: (
+    request: RequestItem,
+    previousStatus: RequestItem["status"]
+  ) => void
+  onDeleted?: (request: RequestItem) => void
+}
+
+export function RequestList({
+  requests,
+  isLoading,
+  hasError,
+  onStatusUpdated,
+  onDeleted,
+}: RequestListProps) {
   const [updatingId, setUpdatingId] = useState<number | null>(null)
   const [deletingId, setDeletingId] = useState<number | null>(null)
-
-  useEffect(() => {
-    async function loadRequests() {
-      try {
-        setIsLoading(true)
-        setHasError(false)
-
-        const response = await fetch("/api/requests")
-
-        if (!response.ok) {
-          throw new Error("Erro ao carregar pedidos.")
-        }
-
-        const data = await response.json()
-        setRequests(data)
-      } catch (error) {
-        console.error(error)
-        setHasError(true)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    loadRequests()
-  }, [])
 
   async function handleStatusChange(
     requestId: number,
@@ -76,14 +57,16 @@ export function RequestList() {
       }
 
       const updatedRequest = await response.json()
-
-      setRequests((current) =>
-        current.map((request) =>
-          request.id === requestId
-            ? { ...request, status: updatedRequest.status }
-            : request
-        )
+      const previousRequest = requests.find(
+        (request) => request.id === requestId
       )
+
+      if (previousRequest) {
+        onStatusUpdated?.(
+          { ...previousRequest, status: updatedRequest.status },
+          previousRequest.status
+        )
+      }
     } catch (error) {
       console.error(error)
     } finally {
@@ -100,6 +83,8 @@ export function RequestList() {
       return
     }
 
+    const deletedRequest = requests.find((request) => request.id === requestId)
+
     try {
       setDeletingId(requestId)
 
@@ -111,9 +96,9 @@ export function RequestList() {
         throw new Error("Erro ao excluir pedido.")
       }
 
-      setRequests((current) =>
-        current.filter((request) => request.id !== requestId)
-      )
+      if (deletedRequest) {
+        onDeleted?.(deletedRequest)
+      }
     } catch (error) {
       console.error(error)
     } finally {
@@ -124,7 +109,6 @@ export function RequestList() {
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center gap-3 px-4 py-10 text-center text-sm text-muted-foreground">
-        <LoaderCircle className="size-5 animate-spin" />
         <p>Carregando pedidos...</p>
       </div>
     )
@@ -133,7 +117,6 @@ export function RequestList() {
   if (hasError) {
     return (
       <div className="flex flex-col items-center justify-center gap-3 px-4 py-10 text-center text-sm text-destructive">
-        <CircleAlert className="size-5" />
         <p>Não foi possível carregar os pedidos.</p>
       </div>
     )
@@ -142,7 +125,6 @@ export function RequestList() {
   if (requests.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center gap-3 px-4 py-10 text-center text-sm text-muted-foreground">
-        <SearchX className="size-5" />
         <p>Nenhum pedido cadastrado até o momento.</p>
       </div>
     )

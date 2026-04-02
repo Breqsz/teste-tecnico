@@ -1,6 +1,9 @@
+"use client"
+
+import { useEffect, useState } from "react"
 import { Input } from "@/components/ui/input"
 import { RequestList } from "@/components/request-list"
-import { RequestForm } from "@/components/request-form"
+import { RequestForm, type RequestItem } from "@/components/request-form"
 import {
   Building2,
   FileCheck,
@@ -10,36 +13,123 @@ import {
   Search,
 } from "lucide-react"
 
-const stats = [
-  {
-    title: "Total de Pedidos",
-    value: 0,
-    icon: FolderOpen,
-    className: "border-[#dbe6f3]",
-  },
-  {
-    title: "Em Análise",
-    value: 0,
-    icon: FileClock,
-    className: "border-[#f3e6bf] bg-[#fffaf0]",
-  },
-  {
-    title: "Aprovados",
-    value: 0,
-    icon: FileCheck,
-    className: "border-[#c8f0db] bg-[#f5fdf8]",
-  },
-  {
-    title: "Negados",
-    value: 0,
-    icon: FileX,
-    className: "border-[#f7d4d4] bg-[#fff8f8]",
-  },
-]
-
 export default function Page() {
+  const [requests, setRequests] = useState<RequestItem[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [hasError, setHasError] = useState(false)
+  const [notice, setNotice] = useState("")
+
+  useEffect(() => {
+    async function loadRequests() {
+      try {
+        setIsLoading(true)
+        setHasError(false)
+
+        const response = await fetch("/api/requests")
+
+        if (!response.ok) {
+          throw new Error("Erro ao carregar pedidos.")
+        }
+
+        const data = await response.json()
+        setRequests(data)
+      } catch (error) {
+        console.error(error)
+        setHasError(true)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadRequests()
+  }, [])
+
+  useEffect(() => {
+    if (!notice) {
+      return
+    }
+
+    const timeout = window.setTimeout(() => {
+      setNotice("")
+    }, 2600)
+
+    return () => {
+      window.clearTimeout(timeout)
+    }
+  }, [notice])
+
+  const stats = [
+    {
+      title: "Total de Pedidos",
+      value: requests.length,
+      icon: FolderOpen,
+      className: "border-[#dbe6f3]",
+    },
+    {
+      title: "Em Análise",
+      value: requests.filter((request) => request.status === "PENDING").length,
+      icon: FileClock,
+      className: "border-[#f3e6bf] bg-[#fffaf0]",
+    },
+    {
+      title: "Aprovados",
+      value: requests.filter((request) => request.status === "APPROVED").length,
+      icon: FileCheck,
+      className: "border-[#c8f0db] bg-[#f5fdf8]",
+    },
+    {
+      title: "Negados",
+      value: requests.filter((request) => request.status === "DENIED").length,
+      icon: FileX,
+      className: "border-[#f7d4d4] bg-[#fff8f8]",
+    },
+  ]
+
+  function getStatusLabel(status: RequestItem["status"]) {
+    if (status === "PENDING") {
+      return "pendente"
+    }
+
+    if (status === "APPROVED") {
+      return "aprovado"
+    }
+
+    return "negado"
+  }
+
+  function handleCreated(request: RequestItem) {
+    setRequests((current) => [request, ...current])
+    setNotice(`Alvará ${request.id} cadastrado com sucesso`)
+  }
+
+  function handleStatusUpdated(
+    updatedRequest: RequestItem,
+    previousStatus: RequestItem["status"]
+  ) {
+    setRequests((current) =>
+      current.map((request) =>
+        request.id === updatedRequest.id ? updatedRequest : request
+      )
+    )
+
+    setNotice(
+      `Alterado alvará ${updatedRequest.id} de ${getStatusLabel(previousStatus)} para ${getStatusLabel(updatedRequest.status)}`
+    )
+  }
+
+  function handleDeleted(request: RequestItem) {
+    setRequests((current) => current.filter((item) => item.id !== request.id))
+    setNotice(`Alvará ${request.id} excluído com sucesso`)
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-[#eef3f8]">
+      {notice ? (
+        <div className="fixed top-4 right-4 z-50 rounded-lg border border-border bg-background px-4 py-3 text-sm shadow-lg">
+          {notice}
+        </div>
+      ) : null}
+
       <header className="border-b bg-background shadow-sm">
         <div className="mx-auto flex max-w-7xl items-center gap-3 px-5 py-5 sm:px-6">
           <div className="flex size-11 items-center justify-center rounded-xl bg-primary text-primary-foreground">
@@ -95,7 +185,7 @@ export default function Page() {
             </p>
           </div>
 
-          <RequestForm />
+          <RequestForm onCreated={handleCreated} />
         </section>
 
         <section>
@@ -122,7 +212,13 @@ export default function Page() {
               </div>
             </div>
 
-            <RequestList />
+            <RequestList
+              requests={requests}
+              isLoading={isLoading}
+              hasError={hasError}
+              onStatusUpdated={handleStatusUpdated}
+              onDeleted={handleDeleted}
+            />
           </div>
         </section>
       </main>

@@ -28,7 +28,20 @@ const workTypes = [
 const cpfPattern = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/
 const sqlPattern = /^\d{3}\.\d{3}\.\d{4}-\d$/
 
-export function RequestForm() {
+export type RequestItem = {
+  id: number
+  ownerName: string
+  cpf: string
+  address: string
+  type: string
+  status: "PENDING" | "APPROVED" | "DENIED"
+}
+
+type RequestFormProps = {
+  onCreated?: (request: RequestItem) => void
+}
+
+export function RequestForm({ onCreated }: RequestFormProps) {
   const [formData, setFormData] = useState(initialForm)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -253,7 +266,12 @@ export function RequestForm() {
         throw new Error("Erro ao cadastrar pedido.")
       }
 
+      const newRequest = await response.json()
+
       setFormData(initialForm)
+      setErrors({})
+      setTouched({})
+      onCreated?.(newRequest)
     } catch (error) {
       console.error(error)
     } finally {
