@@ -34,6 +34,7 @@ export type RequestItem = {
   ownerName: string
   cpf: string
   address: string
+  sql: string
   type: string
   status: "PENDING" | "APPROVED" | "DENIED"
 }

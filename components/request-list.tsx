@@ -20,6 +20,7 @@ type RequestListProps = {
   requests: RequestItem[]
   isLoading: boolean
   hasError: boolean
+  emptyMessage?: string
   onStatusUpdated?: (
     request: RequestItem,
     previousStatus: RequestItem["status"]
@@ -31,6 +32,7 @@ export function RequestList({
   requests,
   isLoading,
   hasError,
+  emptyMessage = "Nenhum pedido cadastrado até o momento.",
   onStatusUpdated,
   onDeleted,
 }: RequestListProps) {
@@ -125,7 +127,7 @@ export function RequestList({
   if (requests.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center gap-3 px-4 py-10 text-center text-sm text-muted-foreground">
-        <p>Nenhum pedido cadastrado até o momento.</p>
+        <p>{emptyMessage}</p>
       </div>
     )
   }

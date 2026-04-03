@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useDeferredValue, useEffect, useState } from "react"
 import { Input } from "@/components/ui/input"
 import { RequestList } from "@/components/request-list"
 import { RequestForm, type RequestItem } from "@/components/request-form"
@@ -24,6 +24,8 @@ export default function Page() {
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
   const [notice, setNotice] = useState("")
+  const [searchTerm, setSearchTerm] = useState("")
+  const deferredSearchTerm = useDeferredValue(searchTerm)
 
   useEffect(() => {
     async function loadRequests() {
@@ -116,6 +118,33 @@ export default function Page() {
     setNotice(`Pedido de ${request.ownerName} excluído com sucesso`)
   }
 
+  function normalizeSearchValue(value: string) {
+    return value
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .trim()
+  }
+
+  const normalizedSearchTerm = normalizeSearchValue(deferredSearchTerm)
+  const filteredRequests = normalizedSearchTerm
+    ? requests.filter((request) => {
+        const searchableFields = [
+          request.ownerName,
+          request.cpf,
+          request.address,
+          request.sql,
+          request.type,
+          request.status,
+          statusText[request.status],
+        ]
+
+        return searchableFields.some((field) =>
+          normalizeSearchValue(field).includes(normalizedSearchTerm)
+        )
+      })
+    : requests
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-[#eef3f8]">
       {notice ? (
@@ -199,17 +228,23 @@ export default function Page() {
               <div className="relative">
                 <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
-                  readOnly
-                  className="pl-9 text-muted-foreground"
+                  value={searchTerm}
+                  onChange={(event) => setSearchTerm(event.target.value)}
+                  className="pl-9"
                   placeholder="Buscar por nome, CPF, endereço, SQL ou tipo de obra..."
                 />
               </div>
             </div>
 
             <RequestList
-              requests={requests}
+              requests={filteredRequests}
               isLoading={isLoading}
               hasError={hasError}
+              emptyMessage={
+                normalizedSearchTerm
+                  ? "Nenhum alvara encontrado para essa busca."
+                  : "Nenhum pedido cadastrado até o momento."
+              }
               onStatusUpdated={handleStatusUpdated}
               onDeleted={handleDeleted}
             />
