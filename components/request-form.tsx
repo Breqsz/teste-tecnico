@@ -25,6 +25,7 @@ const workTypes = [
   "Demolição Parcial",
 ]
 
+const ownerNamePattern = /^\p{L}+(?:\s+\p{L}+)*$/u
 const cpfPattern = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/
 const sqlPattern = /^\d{3}\.\d{3}\.\d{4}-\d$/
 
@@ -51,6 +52,10 @@ export function RequestForm({ onCreated }: RequestFormProps) {
     if (name === "ownerName") {
       if (!value.trim()) {
         return "Informe o nome do proprietário."
+      }
+
+      if (!ownerNamePattern.test(value.trim())) {
+        return "O nome do proprietario deve conter apenas letras e espacos."
       }
 
       return ""
