@@ -47,38 +47,6 @@ export function RequestForm({ onCreated }: RequestFormProps) {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [touched, setTouched] = useState<Record<string, boolean>>({})
 
-  function validateCpf(value: string) {
-    const numbers = value.replace(/\D/g, "")
-
-    if (numbers.length !== 11 || /^(\d)\1{10}$/.test(numbers)) {
-      return false
-    }
-
-    let sum = 0
-
-    for (let index = 0; index < 9; index += 1) {
-      sum += Number(numbers[index]) * (10 - index)
-    }
-
-    let digit = 11 - (sum % 11)
-    const firstDigit = digit >= 10 ? 0 : digit
-
-    if (firstDigit !== Number(numbers[9])) {
-      return false
-    }
-
-    sum = 0
-
-    for (let index = 0; index < 10; index += 1) {
-      sum += Number(numbers[index]) * (11 - index)
-    }
-
-    digit = 11 - (sum % 11)
-    const secondDigit = digit >= 10 ? 0 : digit
-
-    return secondDigit === Number(numbers[10])
-  }
-
   function validateField(name: string, value: string) {
     if (name === "ownerName") {
       if (!value.trim()) {
@@ -93,7 +61,7 @@ export function RequestForm({ onCreated }: RequestFormProps) {
         return "Informe o CPF."
       }
 
-      if (!cpfPattern.test(value.trim()) || !validateCpf(value.trim())) {
+      if (!cpfPattern.test(value.trim())) {
         return "CPF inválido"
       }
 
