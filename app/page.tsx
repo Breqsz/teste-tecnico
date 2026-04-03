@@ -25,9 +25,11 @@ export default function Page() {
   const [hasError, setHasError] = useState(false)
   const [notice, setNotice] = useState("")
   const [searchTerm, setSearchTerm] = useState("")
+  // Suaviza a busca
   const deferredSearchTerm = useDeferredValue(searchTerm)
 
   useEffect(() => {
+    // Carrega pedidos iniciais
     async function loadRequests() {
       try {
         setIsLoading(true)
@@ -57,6 +59,7 @@ export default function Page() {
       return
     }
 
+    // Esconde aviso sozinho
     const timeout = window.setTimeout(() => {
       setNotice("")
     }, 2600)
@@ -119,6 +122,7 @@ export default function Page() {
   }
 
   function normalizeSearchValue(value: string) {
+    // Ignora acentos na busca
     return value
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")

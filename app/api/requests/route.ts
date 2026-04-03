@@ -40,6 +40,7 @@ export async function POST(request: Request) {
       )
     }
 
+    // Revalida no servidor
     if (!ownerNamePattern.test(ownerName)) {
       return NextResponse.json(
         { error: "Nome do proprietário inválido." },

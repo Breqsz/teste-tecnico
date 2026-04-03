@@ -49,6 +49,7 @@ export function RequestForm({ onCreated }: RequestFormProps) {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [touched, setTouched] = useState<Record<string, boolean>>({})
 
+  // Valida campo atual
   function validateField(name: string, value: string) {
     if (name === "ownerName") {
       if (!value.trim()) {
@@ -112,6 +113,7 @@ export function RequestForm({ onCreated }: RequestFormProps) {
   function formatCpf(value: string) {
     const numbers = value.replace(/\D/g, "").slice(0, 11)
 
+    // Aplica máscara CPF
     return numbers
       .replace(/(\d{3})(\d)/, "$1.$2")
       .replace(/(\d{3})(\d)/, "$1.$2")
@@ -121,6 +123,7 @@ export function RequestForm({ onCreated }: RequestFormProps) {
   function formatSql(value: string) {
     const numbers = value.replace(/\D/g, "").slice(0, 11)
 
+    // Aplica máscara SQL
     return numbers
       .replace(/(\d{3})(\d)/, "$1.$2")
       .replace(/(\d{3})(\d)/, "$1.$2")
@@ -171,6 +174,7 @@ export function RequestForm({ onCreated }: RequestFormProps) {
     const nextErrors: Record<string, string> = {}
     const fields = Object.keys(formData) as Array<keyof typeof formData>
 
+    // Valida todos campos
     fields.forEach((field) => {
       const error = validateField(field, formData[field])
 
@@ -220,6 +224,7 @@ export function RequestForm({ onCreated }: RequestFormProps) {
     }
 
     try {
+      // Envia novo pedido
       setIsSubmitting(true)
 
       const response = await fetch("/api/requests", {

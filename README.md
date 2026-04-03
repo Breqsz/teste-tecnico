@@ -2,20 +2,13 @@
 
 Aplicação web para cadastro e gerenciamento de pedidos de alvará de reforma.
 
-O projeto foi desenvolvido com foco em um fluxo simples de CRUD:
-- cadastrar pedidos
-- listar pedidos
-- alterar status
-- excluir pedidos
-
-## Stack
+## Tecnologias
 
 - Next.js
 - React
 - TypeScript
 - Tailwind CSS
-- shadcn/ui
-- Prisma ORM
+- Prisma
 - SQLite
 
 ## Pré-requisitos
@@ -23,96 +16,91 @@ O projeto foi desenvolvido com foco em um fluxo simples de CRUD:
 - Node.js 20 ou superior
 - npm
 
-## Instalação
+## Como rodar o projeto
 
-Instale as dependências:
+1. Clone o repositório.
+2. Instale as dependências:
 
 ```bash
 npm install
 ```
 
-## Configuração do ambiente
-
-Crie o arquivo `.env` com base no `.env.example`:
+3. Crie o arquivo `.env` com base no exemplo:
 
 ```bash
 cp .env.example .env
 ```
 
-Se estiver no Windows PowerShell, pode usar:
+No Windows PowerShell:
 
 ```powershell
 Copy-Item .env.example .env
 ```
 
-## Banco de dados
-
-O projeto usa SQLite com Prisma.
-
-Gerar o Prisma Client:
+4. Gere o cliente do Prisma:
 
 ```bash
-npx prisma generate
+npm run prisma:generate
 ```
 
-Aplicar a migration inicial:
+5. Aplique as migrations do banco:
 
 ```bash
 npx prisma migrate deploy
 ```
 
-Se quiser conferir o status das migrations:
-
-```bash
-npx prisma migrate status
-```
-
-## Rodando o projeto
-
-Inicie o servidor de desenvolvimento:
+6. Inicie o projeto:
 
 ```bash
 npm run dev
 ```
 
-Depois acesse:
+7. Acesse no navegador:
 
 ```txt
 http://localhost:3000
 ```
 
-## Scripts principais
+## Scripts úteis
 
 ```bash
 npm run dev
 npm run build
 npm run start
+npm run lint
 npm run typecheck
-npx prisma generate
-npx prisma migrate deploy
-npx prisma migrate status
+npm run prisma:generate
+npm run prisma:status
 ```
 
-## Estrutura resumida
+## Banco de dados
+
+- O projeto usa SQLite.
+- O arquivo do banco é criado localmente como `dev.db`.
+- A variável de ambiente usada é:
+
+```env
+DATABASE_URL="file:./dev.db"
+```
+
+## Estrutura principal
 
 ```txt
 app/
-  api/requests/         rotas do CRUD
-  page.tsx              tela principal
+  api/requests/         rotas da aplicação
+  page.tsx              página principal
 
 components/
   request-form.tsx      formulário de cadastro
-  request-list.tsx      listagem de pedidos
-  ui/                   componentes base
+  request-list.tsx      listagem de alvarás
 
 lib/
-  prisma.ts             instância do Prisma Client
+  prisma.ts             configuração do Prisma Client
 
 prisma/
   schema.prisma         schema do banco
-  migrations/           migration inicial
 ```
 
-## Observação
+## Autor
 
-O banco SQLite é local e os dados ficam no arquivo `dev.db`.
+Guilherme Rocha Bianchini

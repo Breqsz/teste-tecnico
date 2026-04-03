@@ -44,6 +44,7 @@ export function RequestList({
     status: RequestItem["status"]
   ) {
     try {
+      // Bloqueia item em edição
       setUpdatingId(requestId)
 
       const response = await fetch(`/api/requests/${requestId}`, {
@@ -88,6 +89,7 @@ export function RequestList({
     const deletedRequest = requests.find((request) => request.id === requestId)
 
     try {
+      // Bloqueia item em exclusão
       setDeletingId(requestId)
 
       const response = await fetch(`/api/requests/${requestId}`, {
