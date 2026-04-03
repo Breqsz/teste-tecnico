@@ -61,6 +61,12 @@ npm run dev
 http://localhost:3000
 ```
 
+## Teste visual
+
+Versão publicada para visualização:
+
+[https://testesmul.netlify.app](https://testesmul.netlify.app)
+
 ## Scripts úteis
 
 ```bash
@@ -82,6 +88,15 @@ npm run prisma:status
 ```env
 DATABASE_URL="file:./dev.db"
 ```
+
+## Observação sobre o deploy
+
+- O projeto foi estruturado para rodar localmente.
+- A persistência atual usa SQLite com arquivo local.
+- Isso funciona bem no ambiente local, mas não é a melhor abordagem para produção em plataformas como Netlify.
+- Por isso, a versão publicada pode exibir erro ao carregar os pedidos, mesmo com a interface disponível para teste visual.
+- Esse ponto não foi corrigido porque o escopo pedido até aqui foi deixar o projeto pronto para execução local por qualquer pessoa que baixar o repositório.
+- Para produção real, o ideal é migrar o banco para uma solução externa, como PostgreSQL.
 
 ## Estrutura principal
 
