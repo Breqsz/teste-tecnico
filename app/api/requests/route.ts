@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server"
 
+import type { RequestFormData } from "@/features/requests/types"
+import { validateRequestPayload } from "@/features/requests/validation"
 import { prisma } from "@/lib/prisma"
-
-const ownerNamePattern = /^\p{L}+(?:\s+\p{L}+)*$/u
-const cpfPattern = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/
-const sqlPattern = /^\d{3}\.\d{3}\.\d{4}-\d$/
 
 export async function GET() {
   try {
@@ -26,53 +24,25 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const ownerName = body.ownerName?.trim()
-    const cpf = body.cpf?.trim()
-    const address = body.address?.trim()
-    const sql = body.sql?.trim()
-    const type = body.type?.trim()
+    const payload: RequestFormData = {
+      ownerName: body.ownerName?.trim() ?? "",
+      cpf: body.cpf?.trim() ?? "",
+      address: body.address?.trim() ?? "",
+      sql: body.sql?.trim() ?? "",
+      type: body.type?.trim() ?? "",
+    }
     const status = body.status
 
-    if (!ownerName || !cpf || !address || !sql || !type) {
-      return NextResponse.json(
-        { error: "Campos obrigatórios não enviados." },
-        { status: 400 }
-      )
-    }
-
     // Revalida no servidor
-    if (!ownerNamePattern.test(ownerName)) {
-      return NextResponse.json(
-        { error: "Nome do proprietário inválido." },
-        { status: 400 }
-      )
-    }
+    const validationError = validateRequestPayload(payload)
 
-    if (!cpfPattern.test(cpf)) {
-      return NextResponse.json({ error: "CPF inválido." }, { status: 400 })
-    }
-
-    if (address.length < 10) {
-      return NextResponse.json(
-        { error: "Endereço do imóvel incompleto." },
-        { status: 400 }
-      )
-    }
-
-    if (!sqlPattern.test(sql)) {
-      return NextResponse.json(
-        { error: "SQL inválido." },
-        { status: 400 }
-      )
+    if (validationError) {
+      return NextResponse.json({ error: validationError }, { status: 400 })
     }
 
     const newRequest = await prisma.request.create({
       data: {
-        ownerName,
-        cpf,
-        address,
-        sql,
-        type,
+        ...payload,
         ...(status ? { status } : {}),
       },
     })

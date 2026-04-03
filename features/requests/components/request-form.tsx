@@ -7,36 +7,17 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { workTypes } from "@/features/requests/constants"
+import type { RequestFormData, RequestItem } from "@/features/requests/types"
+import { formatCpf, formatSql } from "@/features/requests/utils"
+import { validateRequestField } from "@/features/requests/validation"
 
-const initialForm = {
+const initialForm: RequestFormData = {
   ownerName: "",
   cpf: "",
   address: "",
   sql: "",
   type: "",
-}
-
-const workTypes = [
-  "Reforma Simples",
-  "Reforma com Acréscimo",
-  "Alteração de Fachada",
-  "Mudança de Uso",
-  "Regularização",
-  "Demolição Parcial",
-]
-
-const ownerNamePattern = /^\p{L}+(?:\s+\p{L}+)*$/u
-const cpfPattern = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/
-const sqlPattern = /^\d{3}\.\d{3}\.\d{4}-\d$/
-
-export type RequestItem = {
-  id: number
-  ownerName: string
-  cpf: string
-  address: string
-  sql: string
-  type: string
-  status: "PENDING" | "APPROVED" | "DENIED"
 }
 
 type RequestFormProps = {
@@ -48,87 +29,6 @@ export function RequestForm({ onCreated }: RequestFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [touched, setTouched] = useState<Record<string, boolean>>({})
-
-  // Valida campo atual
-  function validateField(name: string, value: string) {
-    if (name === "ownerName") {
-      if (!value.trim()) {
-        return "Informe o nome do proprietário."
-      }
-
-      if (!ownerNamePattern.test(value.trim())) {
-        return "O nome do proprietario deve conter apenas letras e espacos."
-      }
-
-      return ""
-    }
-
-    if (name === "cpf") {
-      if (!value.trim()) {
-        return "Informe o CPF."
-      }
-
-      if (!cpfPattern.test(value.trim())) {
-        return "CPF inválido"
-      }
-
-      return ""
-    }
-
-    if (name === "address") {
-      if (!value.trim()) {
-        return "Informe o endereço do imóvel."
-      }
-
-      if (value.trim().length < 10) {
-        return "Endereço deve ser mais completo"
-      }
-
-      return ""
-    }
-
-    if (name === "sql") {
-      if (!value.trim()) {
-        return "Informe o SQL do imóvel."
-      }
-
-      if (!sqlPattern.test(value.trim())) {
-        return "SQL deve estar no formato 000.000.0000-0"
-      }
-
-      return ""
-    }
-
-    if (name === "type") {
-      if (!value.trim()) {
-        return "Selecione o tipo de obra."
-      }
-
-      return ""
-    }
-
-    return ""
-  }
-
-  function formatCpf(value: string) {
-    const numbers = value.replace(/\D/g, "").slice(0, 11)
-
-    // Aplica máscara CPF
-    return numbers
-      .replace(/(\d{3})(\d)/, "$1.$2")
-      .replace(/(\d{3})(\d)/, "$1.$2")
-      .replace(/(\d{3})(\d{1,2})$/, "$1-$2")
-  }
-
-  function formatSql(value: string) {
-    const numbers = value.replace(/\D/g, "").slice(0, 11)
-
-    // Aplica máscara SQL
-    return numbers
-      .replace(/(\d{3})(\d)/, "$1.$2")
-      .replace(/(\d{3})(\d)/, "$1.$2")
-      .replace(/(\d{4})(\d)$/, "$1-$2")
-  }
 
   function handleChange(
     event: React.ChangeEvent<
@@ -158,7 +58,7 @@ export function RequestForm({ onCreated }: RequestFormProps) {
 
       const nextErrors = { ...current }
 
-      const error = validateField(name, value)
+      const error = validateRequestField(name as keyof RequestFormData, value)
 
       if (error) {
         nextErrors[name] = error
@@ -172,11 +72,11 @@ export function RequestForm({ onCreated }: RequestFormProps) {
 
   function validateForm() {
     const nextErrors: Record<string, string> = {}
-    const fields = Object.keys(formData) as Array<keyof typeof formData>
+    const fields = Object.keys(formData) as Array<keyof RequestFormData>
 
     // Valida todos campos
     fields.forEach((field) => {
-      const error = validateField(field, formData[field])
+      const error = validateRequestField(field, formData[field])
 
       if (error) {
         nextErrors[field] = error
@@ -201,7 +101,10 @@ export function RequestForm({ onCreated }: RequestFormProps) {
       [name]: true,
     }))
 
-    const error = validateField(name, formData[name as keyof typeof formData])
+    const error = validateRequestField(
+      name as keyof RequestFormData,
+      formData[name as keyof RequestFormData]
+    )
 
     setErrors((current) => {
       const nextErrors = { ...current }

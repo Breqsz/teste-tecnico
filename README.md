@@ -91,8 +91,10 @@ app/
   page.tsx              página principal
 
 components/
-  request-form.tsx      formulário de cadastro
-  request-list.tsx      listagem de alvarás
+  ui/                   componentes base reutilizáveis
+
+features/
+  requests/             domínio de alvarás
 
 lib/
   prisma.ts             configuração do Prisma Client

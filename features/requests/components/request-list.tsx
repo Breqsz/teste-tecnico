@@ -2,19 +2,11 @@
 
 import { useState } from "react"
 import { Trash2 } from "lucide-react"
-import type { RequestItem } from "@/components/request-form"
-
-const statusLabels = {
-  PENDING: "Pendente",
-  APPROVED: "Aprovado",
-  DENIED: "Negado",
-}
-
-const statusClasses = {
-  PENDING: "bg-amber-100 text-amber-700",
-  APPROVED: "bg-green-100 text-green-700",
-  DENIED: "bg-red-100 text-red-700",
-}
+import {
+  statusClasses,
+  statusLabels,
+} from "@/features/requests/constants"
+import type { RequestItem } from "@/features/requests/types"
 
 type RequestListProps = {
   requests: RequestItem[]

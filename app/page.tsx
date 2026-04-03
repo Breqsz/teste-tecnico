@@ -2,8 +2,13 @@
 
 import { useDeferredValue, useEffect, useState } from "react"
 import { Input } from "@/components/ui/input"
-import { RequestList } from "@/components/request-list"
-import { RequestForm, type RequestItem } from "@/components/request-form"
+import {
+  normalizeSearchValue,
+  RequestForm,
+  RequestList,
+  statusText,
+  type RequestItem,
+} from "@/features/requests"
 import {
   Building2,
   FileCheck,
@@ -12,12 +17,6 @@ import {
   FolderOpen,
   Search,
 } from "lucide-react"
-
-const statusText = {
-  PENDING: "pendente",
-  APPROVED: "aprovado",
-  DENIED: "negado",
-}
 
 export default function Page() {
   const [requests, setRequests] = useState<RequestItem[]>([])
@@ -119,15 +118,6 @@ export default function Page() {
   function handleDeleted(request: RequestItem) {
     setRequests((current) => current.filter((item) => item.id !== request.id))
     setNotice(`Pedido de ${request.ownerName} excluído com sucesso`)
-  }
-
-  function normalizeSearchValue(value: string) {
-    // Ignora acentos na busca
-    return value
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .toLowerCase()
-      .trim()
   }
 
   const normalizedSearchTerm = normalizeSearchValue(deferredSearchTerm)
